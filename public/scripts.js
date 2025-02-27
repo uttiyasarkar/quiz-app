@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const questionElement = document.getElementById('question');
     const answersElement = document.getElementById('answers');
     const submitBtn = document.getElementById('submit-btn');
+    const nextBtn = document.getElementById('next-btn');
     const feedbackElement = document.getElementById('feedback');
     const scoreElement = document.getElementById('score');
 
@@ -72,10 +73,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userAnswer === correctAnswer) {
             score++;
             feedbackElement.textContent = 'Correct!';
+            feedbackElement.classList.add('correct');
+            feedbackElement.classList.remove('wrong');
         } else {
             feedbackElement.textContent = `Wrong! The correct answer is: ${correctAnswer}`;
+            feedbackElement.classList.add('wrong');
+            feedbackElement.classList.remove('correct');
         }
 
+        submitBtn.style.display = 'none';
+        nextBtn.style.display = 'block';
+    });
+
+    nextBtn.addEventListener('click', () => {
         currentQuestionIndex++;
         if (currentQuestionIndex < questions.length) {
             displayQuestion();
@@ -85,6 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function displayQuestion() {
+        feedbackElement.textContent = ''; // Clear feedback
+        submitBtn.style.display = 'block';
+        nextBtn.style.display = 'none';
+
         const question = questions[currentQuestionIndex];
         questionElement.textContent = question['Question Text'];
         answersElement.innerHTML = '';
@@ -97,6 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
             question.WrongAnswer4,
             question.WrongAnswer5
         ].filter(answer => answer);
+
+        // Ensure at least 4 options are displayed
+        while (answers.length < 4) {
+            answers.push(''); // Add empty strings to ensure at least 4 options
+        }
 
         // Ensure the correct answer is always included
         const shuffledAnswers = shuffleArray(answers);
@@ -147,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             feedbackElement.textContent = 'Quiz completed!';
             scoreElement.textContent = `Your score: ${score}`;
+            scoreElement.classList.add('score');
         } catch (error) {
             console.error('Error submitting score:', error);
             feedbackElement.textContent = 'An error occurred while submitting your score. Please try again.';
