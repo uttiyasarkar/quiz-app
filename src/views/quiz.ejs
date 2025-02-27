@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Quiz Application</title>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Quiz</h1>
+        <form id="quiz-form" action="/submit-quiz" method="POST">
+            <% questions.forEach((question, index) => { %>
+                <div class="question">
+                    <p><%= index + 1 %>. <%= question['Question Text'] %></p>
+                    <div class="options">
+                        <label>
+                            <input type="radio" name="question<%= index %>" value="<%= question.CorrectAnswer %>">
+                            <%= question.CorrectAnswer %>
+                        </label>
+                        <% if (question.WrongAnswer1) { %>
+                        <label>
+                            <input type="radio" name="question<%= index %>" value="<%= question.WrongAnswer1 %>">
+                            <%= question.WrongAnswer1 %>
+                        </label>
+                        <% } %>
+                        <% if (question.WrongAnswer2) { %>
+                        <label>
+                            <input type="radio" name="question<%= index %>" value="<%= question.WrongAnswer2 %>">
+                            <%= question.WrongAnswer2 %>
+                        </label>
+                        <% } %>
+                        <% if (question.WrongAnswer3) { %>
+                        <label>
+                            <input type="radio" name="question<%= index %>" value="<%= question.WrongAnswer3 %>">
+                            <%= question.WrongAnswer3 %>
+                        </label>
+                        <% } %>
+                        <% if (question.WrongAnswer4) { %>
+                        <label>
+                            <input type="radio" name="question<%= index %>" value="<%= question.WrongAnswer4 %>">
+                            <%= question.WrongAnswer4 %>
+                        </label>
+                        <% } %>
+                        <% if (question.WrongAnswer5) { %>
+                        <label>
+                            <input type="radio" name="question<%= index %>" value="<%= question.WrongAnswer5 %>">
+                            <%= question.WrongAnswer5 %>
+                        </label>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+            <button type="submit">Submit Quiz</button>
+        </form>
+        <div id="feedback"></div>
+    </div>
+    <script src="/scripts.js"></script>
+</body>
+</html>
