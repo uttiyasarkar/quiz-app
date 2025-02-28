@@ -25,11 +25,13 @@ class QuizController {
     async createUser(req, res) {
         try {
             const { name, surname, matriculation } = req.body;
+            console.log('Creating user with data:', { name, surname, matriculation });
             const user = await this.userService.createUser({ name, surname, matriculation });
-            return user;
+            console.log('User created:', user);
+            res.status(201).json(user); // Ensure the response is sent back to the client
         } catch (error) {
             console.error('Error creating user:', error);
-            throw error;
+            res.status(500).json({ error: 'Failed to create user' }); // Send error response to the client
         }
     }
 }

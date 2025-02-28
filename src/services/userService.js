@@ -1,27 +1,17 @@
-const mongoose = require('mongoose');
-
-// Define the schema for storing user details and their score
-const userSchema = new mongoose.Schema({
-    name: String,
-    surname: String,
-    matriculation: String,
-    score: Number, // Add the score field
-    date: { type: Date, default: Date.now }
-});
-
-// Create the model
-const User = mongoose.model('User', userSchema);
+const User = require('../models/user'); // Assuming you have a User model defined
 
 class UserService {
-    async createUser(name, surname, matriculation) {
-        const newUser = new User({ name, surname, matriculation });
-        await newUser.save();
-        return newUser._id;
-    }
-
-    async updateUserScore(userId, score) {
-        console.log('Updating user score:', { userId, score });
-        await User.findByIdAndUpdate(userId, { score });
+    async createUser(userData) {
+        try {
+            console.log('Saving user data:', userData);
+            const user = new User(userData);
+            await user.save();
+            console.log('User saved:', user);
+            return user;
+        } catch (error) {
+            console.error('Error creating user in UserService:', error);
+            throw error;
+        }
     }
 }
 
