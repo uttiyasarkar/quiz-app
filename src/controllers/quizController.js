@@ -9,42 +9,27 @@ class QuizController {
             const questions = await this.csvParser.getQuestions();
             res.json(questions);
         } catch (error) {
-            res.status(500).json({ message: 'Error loading questions' });
+            console.error('Error loading questions:', error);
+            res.status(500).json({ error: 'Failed to load questions' });
         }
     }
 
-    checkAnswer(req, res) {
-        const { questionId, userAnswer } = req.body;
-        const correctAnswer = this.csvParser.getCorrectAnswer(questionId);
-
-        if (userAnswer === correctAnswer) {
-            res.json({ correct: true });
-        } else {
-            res.json({ correct: false, correctAnswer });
-        }
+    async checkAnswer(req, res) {
+        // Implement your logic here
     }
 
     async submitScore(req, res) {
-        const { userId, score } = req.body;
-        console.log('Received score submission:', { userId, score });
-
-        try {
-            await this.userService.updateUserScore(userId, score);
-            res.status(201).json({ message: 'Score saved successfully' });
-        } catch (error) {
-            console.error('Error saving score:', error);
-            res.status(500).json({ message: 'Error saving score' });
-        }
+        // Implement your logic here
     }
 
     async createUser(req, res) {
-        const { name, surname, matriculation } = req.body;
-
         try {
-            const userId = await this.userService.createUser(name, surname, matriculation);
-            res.status(201).json({ userId });
+            const { name, surname, matriculation } = req.body;
+            const user = await this.userService.createUser({ name, surname, matriculation });
+            return user;
         } catch (error) {
-            res.status(500).json({ message: 'Error creating user' });
+            console.error('Error creating user:', error);
+            throw error;
         }
     }
 }

@@ -1,34 +1,40 @@
-const fs = require('fs');
-const path = require('path');
+const axios = require('axios');
 const csv = require('csv-parser');
+const { Readable } = require('stream');
 
 class CSVParser {
-    constructor(filePath) {
-        this.filePath = filePath;
+    constructor(csvUrl) {
+        this.csvUrl = csvUrl;
     }
 
     async getQuestions() {
-        return new Promise((resolve, reject) => {
-            const questions = [];
-            fs.createReadStream(this.filePath)
-                .pipe(csv())
-                .on('data', (row) => {
-                    questions.push(row);
-                })
-                .on('end', () => {
-                    console.log('CSV file successfully processed');
-                    console.log('Questions:', questions); // Add logging here
-                    resolve(questions);
-                })
-                .on('error', (error) => {
-                    console.error('Error reading CSV file:', error); // Add logging here
-                    reject(error);
-                });
-        });
-    }
+        const questions = [];
+        console.log(`Fetching CSV file from: ${this.csvUrl}`);
 
-    getCorrectAnswer(questionId) {
-        // Implement logic to get the correct answer for a given questionId
+        try {
+            const response = await axios.get(this.csvUrl);
+            const data = response.data;
+
+            return new Promise((resolve, reject) => {
+                const stream = Readable.from(data);
+                stream
+                    .pipe(csv())
+                    .on('data', (row) => {
+                        questions.push(row);
+                    })
+                    .on('end', () => {
+                        console.log('CSV file successfully processed');
+                        resolve(questions);
+                    })
+                    .on('error', (error) => {
+                        console.error('Error reading CSV file:', error);
+                        reject(error);
+                    });
+            });
+        } catch (error) {
+            console.error('Error fetching CSV file:', error);
+            throw error;
+        }
     }
 }
 
