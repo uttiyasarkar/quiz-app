@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let userId = '';
 
+    // Event listener for the user form submission
     userForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         console.log('User form submitted');
@@ -22,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const matriculation = document.getElementById('matriculation').value;
 
         try {
+            console.log('Creating user with data:', { name, surname, matriculation });
+
             // Create user entry in the database
             const response = await fetch('/api/create-user', {
                 method: 'POST',
@@ -32,11 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Failed to create user:', errorText);
                 throw new Error('Failed to create user');
             }
 
             const data = await response.json();
-            userId = data.userId;
+            userId = data._id; // Ensure the correct field is used
             console.log('User created with ID:', userId);
 
             // Hide user form and show quiz container
@@ -46,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Fetch questions
             const questionsResponse = await fetch('/api/quiz');
             if (!questionsResponse.ok) {
+                const errorText = await questionsResponse.text();
+                console.error('Failed to fetch questions:', errorText);
                 throw new Error('Failed to fetch questions');
             }
 
@@ -60,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Event listener for the submit button
     submitBtn.addEventListener('click', () => {
         const selectedAnswer = document.querySelector('input[name="answer"]:checked');
         if (!selectedAnswer) {
@@ -85,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nextBtn.style.display = 'block';
     });
 
+    // Event listener for the next button
     nextBtn.addEventListener('click', () => {
         currentQuestionIndex++;
         if (currentQuestionIndex < questions.length) {
@@ -94,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Function to display the current question
     function displayQuestion() {
         feedbackElement.textContent = ''; // Clear feedback
         submitBtn.style.display = 'block';
@@ -113,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ].filter(answer => answer);
 
         // Ensure at least 4 options are displayed
-        while (answers.length < 4) {
+        while (answers.length < 5) {
             answers.push(''); // Add empty strings to ensure at least 4 options
         }
 
@@ -139,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Function to shuffle an array
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -147,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return array;
     }
 
+    // Function to submit the score
     async function submitScore() {
         try {
             console.log('Submitting score:', { userId, score });
@@ -157,13 +169,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ userId, score })
             });
-    
+
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Failed to submit score:', errorText);
                 throw new Error('Failed to submit score');
             }
-    
+
             feedbackElement.textContent = 'Quiz completed!';
             scoreElement.textContent = `Your score: ${score}`;
             scoreElement.classList.add('score');
